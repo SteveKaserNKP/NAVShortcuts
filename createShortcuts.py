@@ -22,6 +22,30 @@ def lnkName(s):
             rName = rName + f" - CONFIGURE"
         return rName + '.lnk'
 
+def getTargetVersion(v):
+    if v == "2009R2":
+        return os.path.join("C:/","Program Files (x86)","Microsoft Dynamics NAV","60","Classic","finsql.exe")
+    elif v == "2016":
+        return os.path.join("C:/","Program Files (x86)","Microsoft Dynamics NAV","90","RoleTailored Client","Microsoft.Dynamics.Nav.Client.exe")
+    elif v == "2017":
+        return os.path.join("C:/","Program Files (x86)","Microsoft Dynamics NAV","100","RoleTailored Client","Microsoft.Dynamics.Nav.Client.exe")
+    elif v == "2018":
+        return os.path.join("C:/","Program Files (x86)","Microsoft Dynamics NAV","110","RoleTailored Client","Microsoft.Dynamics.Nav.Client.exe")
+    else:
+        return f'unsupported version passed in to getTargetVersion: {v}'
+
+def getArgs(s):
+    v = s['NavisionVersion']
+    if v == "2009R2":
+        args = f"servername={s['SQLServer']}, database={s['DatabaseName']}"
+        if s['Company']:
+            args = args + f", company={s['Company']}"
+        if s['RequireAuthentication']:
+            args = args + f", ntauthentication={'yes' if s['RequireAuthentication'] == 'Y' else 'no'}"
+        return args
+    else:
+        return ''
+
 def deleteShortcuts(path):
     for f in os.listdir(path):
         os.remove(os.path.join(path, f))
@@ -29,12 +53,11 @@ def deleteShortcuts(path):
 def createShortcuts(path, systems):
     for s in systems:
         lnk_path = os.path.join(path, lnkName(s))
-        # this only creates 2018 shortcuts - needs to determine version
-        lnk_target = os.path.join("C:/","Program Files (x86)","Microsoft Dynamics NAV","110","RoleTailored Client","Microsoft.Dynamics.Nav.Client.exe")
-        # need to add args, icon and description
+        lnk_target = getTargetVersion(s['NavisionVersion'])
+        lnk_args = getArgs(s)
         winshell.CreateShortcut(Path=lnk_path,
                                 Target=lnk_target,
-                                Arguments='',
+                                Arguments=lnk_args,
                                 StartIn='',
                                 Icon=('',0),
                                 Description=''
