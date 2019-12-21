@@ -31,6 +31,7 @@ def createShortcuts(path, systems):
         lnk_path = os.path.join(path, lnkName(s))
         # this only creates 2018 shortcuts - needs to determine version
         lnk_target = os.path.join("C:/","Program Files (x86)","Microsoft Dynamics NAV","110","RoleTailored Client","Microsoft.Dynamics.Nav.Client.exe")
+        # need to add args, icon and description
         winshell.CreateShortcut(Path=lnk_path,
                                 Target=lnk_target,
                                 Arguments='',
