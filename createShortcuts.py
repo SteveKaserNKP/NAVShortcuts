@@ -1,10 +1,5 @@
 import os
 import winshell
-import json
-
-shortcuts_path = os.path.join(os.path.dirname(__file__), "test")
-configs_path = os.path.join(os.path.dirname(__file__), "testConfig")
-icons_path = os.path.join(os.path.dirname(__file__), "icons")
 
 def getSQLName(s):
     if "\\" in s:
@@ -72,7 +67,7 @@ def getArgs(s, path):
                 return f"http://{rtc}.nkparts.com:{port}/{instance}"
         else:
             config = createCUS(rtc, port, instance, path)
-            args = f' -settings:"{os.path.join(configs_path, config)}"'
+            args = f' -settings:"{os.path.join(path, config)}"'
             if s['Profile']:
                 args = args + f' -profile:"{profile}"'
             if s['Configure']:
@@ -143,11 +138,3 @@ def createShortcut(path_shortcuts, path_configs, path_icons, system):
         Icon=(lnk_icon,0),
         Description=''
     )
-
-with open('systems.json') as data:
-    systems = json.load(data)
-
-deleteFilesInDir(configs_path)
-deleteFilesInDir(shortcuts_path)
-for s in systems:
-    createShortcut(shortcuts_path, configs_path, icons_path, s)
