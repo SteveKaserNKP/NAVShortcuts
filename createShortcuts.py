@@ -1,7 +1,5 @@
 import os
 import winshell
-from urllib.parse import urljoin
-import webbrowser
 import json
 
 shortcuts_path = os.path.join(os.path.dirname(__file__), "test")
