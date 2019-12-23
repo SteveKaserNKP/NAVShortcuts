@@ -24,7 +24,7 @@ def getName(data):
     else:
         rName = f"{data['SystemName']} - {data['NavisionVersion']} - SQL@{data['SQLServer']}"
     if data['NavisionVersion'] == '2009R2':
-        rName = rName
+        rName = rName + f" - {data['Company']}"
     else:
         rName = rName + f" - RTC@{data['RTCServer']} - {data['ClientServicesPort']}"
         if data['Profile']:
@@ -50,8 +50,14 @@ window = tk.Tk()
 window.title('Navision Shortcuts Manager')
 window.geometry('800x600')
 
-for i in range(10):
+c = 0
+r = 0
+stack = 10
+for i in range(len(systems)):
     data = systems[i]
+    c = i % stack
+    if i > 0 and i % stack == 0:
+        r+=1
     # FRAME
     frame = tk.Frame(window, relief=tk.RIDGE, padx=0, pady=5, bd=1)
     frame.bind('<Double-Button-1>', doubleClick)
@@ -69,43 +75,8 @@ for i in range(10):
     text_lbl.bind('<Double-Button-1>', iconDoubleClick)
 
     # pack objects
-    frame.grid(column=i, row=0, padx=2, pady=2)
+    frame.grid(column=c, row=r, padx=2, pady=2)
     icon_lbl.grid(column=0, row=0)
     text_lbl.grid(column=0, row=1)
-
-# i+=1
-# data1 = systems[i]
-# # FRAME
-# frame1 = tk.Frame(window, relief=tk.RIDGE, padx=0, pady=5, bd=1)
-# frame1.bind('<Double-Button-1>', doubleClick)
-# frame1.keys().append('data')
-# frame1.data = data1
-
-# # ICON
-# img1 = tk.PhotoImage(file=getIconFile(data['NavisionVersion'], data['Client']))
-# icon_lbl1 = tk.Label(frame1, image=img1)
-# icon_lbl1.bind('<Double-Button-1>', iconDoubleClick)
-
-# # TEXT
-# text_lbl1 = tk.Label(frame1, text=getName(data), wraplength=100)
-# text_lbl1.bind('<Double-Button-1>', iconDoubleClick)
-
-# # pack objects
-# frame1.grid(column=i, row=0, padx=2, pady=2)
-# icon_lbl1.grid(column=0, row=0)
-# text_lbl1.grid(column=0, row=1)
-
-
-
-# frame = createFrame(window, systems[10])
-# frame.grid(column=0, row=0, padx=2, pady=2)
-# icon_lbl = createIconLabel(frame, icon_windows)
-# icon_lbl.grid(column=0, row=0, padx=10, pady=5)
-# text_lbl = createTextLabel(frame, getName(systems[10]))
-# text_lbl.grid(column=0, row=1)
-# img = tk.PhotoImage(file=getIconFile(systems[10]['NavisionVersion'], systems[10]['Client']))
-# icon_lbl = tk.Label(frame, image=img)
-# icon_lbl.bind('<Double-Button-1>', iconDoubleClick)
-# icon_lbl.grid(column=0, row=0)
 
 window.mainloop()
