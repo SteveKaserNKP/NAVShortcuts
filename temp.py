@@ -1,19 +1,18 @@
 import tkinter as tk
 
 root = tk.Tk()
-root.minsize(200, 200)
 
 def onClick(event):
-    btn = event.widget # event.widget is the widget that called the event
-    print(btn.getvar("temp_id")) #Print the text for the selected button
+    f = event.widget
+    print(f.temp_id)
 
 for i in range(10):
-    b = tk.Frame(root, relief=tk.RIDGE, padx=0, pady=5, bd=1)
-    l = tk.Label(b, text=i)
+    f = tk.Frame(root, padx=50, pady=50, background='grey' if i % 2 == 0 else '')
+    f.bind("<Button-1>", onClick)
+    f.keys().append('temp_id')
+    f.temp_id = i
+    l = tk.Label(f, text=i)
     l.grid(column=0, row=0)
-    b.setvar('temp_id', i)
-    b.grid(row = i, column = 0)
-    # Bind to left click which generates an event object
-    b.bind("<Button-1>", onClick)
+    f.grid(column=i,row=0)
 
 root.mainloop()
