@@ -68,6 +68,7 @@ def createFormEntry(master, name, c, r, lbl_font, entry_font, state=tk.NORMAL):
     entry = tk.Entry(frame, textvariable=var, font=entry_font, state=state)
     lbl.grid(column=0, row=0, sticky='W')
     entry.grid(column=0, row=1)
+    return entry
 
 def createOptionMenu(master, name, options, c, r, lbl_font, options_font, state=tk.NORMAL):
     frame = tk.Frame(master)
@@ -81,6 +82,7 @@ def createOptionMenu(master, name, options, c, r, lbl_font, options_font, state=
     options_menu.configure(font=options_font)
     lbl_options.grid(column=0, row=0, sticky='W')
     options.grid(column=0, row=1, sticky='W')
+    return (options, var_options)
 
 def createCheckbox(master, name, c, r, check_font, state=tk.NORMAL):
     frame = tk.Frame(master)
@@ -88,6 +90,7 @@ def createCheckbox(master, name, c, r, check_font, state=tk.NORMAL):
     var_checkbox = tk.IntVar()
     checkbox = tk.Checkbutton(frame, text=name, font=check_font, variable=var_checkbox, state=state)
     checkbox.grid(column=0, row=1)
+    return checkbox
 
 def createFormFrame(master, name, c, r):
     f = tk.LabelFrame(master, text=name)
