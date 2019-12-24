@@ -1,5 +1,6 @@
 import os
 import winshell
+import paths
 
 def getSQLName(s):
     if "\\" in s:
@@ -7,37 +8,36 @@ def getSQLName(s):
     else:
         return s
 
-def getLnkPath(s, path):
+def getLnkPath(s):
     if s['Client'] == 'WEB':
         rName = f"{s['SystemName']} - WEB - {s['NavisionVersion']} - SQL@{getSQLName(s['SQLServer'])}"
     else:
         rName = f"{s['SystemName']} - {s['NavisionVersion']} - SQL@{getSQLName(s['SQLServer'])}"
     if s['NavisionVersion'] == '2009R2':
-        rName = rName + '.lnk'
+        return rName
     else:
         rName = rName + f" - RTC@{s['RTCServer']} - {s['ClientServicesPort']}"
         if s['Profile']:
             rName = rName + f" - {s['Profile']}"
         if s['Configure'] == 'Y':
             rName = rName + f" - CONFIGURE"
-        rName = rName + '.lnk'
-    return os.path.join(path, rName)
+        return rName
 
 def getTargetVersion(s):
     version = s['NavisionVersion']
     client = s['Client']
     if version == "2009R2":
-        return os.path.join("C:","Program Files (x86)","Microsoft Dynamics NAV","60","Classic","finsql.exe")
+        return paths.exe_2009R2
     else:
         if client == 'WEB':
-            return 'c:\\program files\\internet explorer\\iexplore.exe'
+            return paths.exe_ie
         else:
             if version == "2016":
-                return os.path.join("C:/","Program Files (x86)","Microsoft Dynamics NAV","90","RoleTailored Client","Microsoft.Dynamics.Nav.Client.exe")
+                return paths.exe_2016
             elif version == "2017":
-                return os.path.join("C:/","Program Files (x86)","Microsoft Dynamics NAV","100","RoleTailored Client","Microsoft.Dynamics.Nav.Client.exe")
+                return paths.exe_2017
             elif version == "2018":
-                return os.path.join("C:/","Program Files (x86)","Microsoft Dynamics NAV","110","RoleTailored Client","Microsoft.Dynamics.Nav.Client.exe")
+                return paths.exe_2018
             else:
                 return f'unsupported version passed in to getTargetVersion: {version}'
 
@@ -52,27 +52,41 @@ def getArgs(s, path):
     port = s['ClientServicesPort']
     instance = s['ServerInstanceName']
     profile = s['Profile']
+    args = []
     if version == "2009R2":
-        args = f"servername={sql}, database={db}"
+        args.append(f"servername={sql}")
+        args.append(f"database={db}")
         if company:
-            args = args + f", company={company}"
+            args.append(f"company={company}")
         if reqAuth:
-            args = args + f", ntauthentication={'yes' if reqAuth == 'Y' else 'no'}"
+            args.append(f"ntauthentication={'yes' if reqAuth == 'Y' else 'no'}")
         return args
     else:
         if client == 'WEB':
             if port:
-                return f"http://{rtc}.nkparts.com:{port}/{instance}"
+                args.append(f"http://{rtc}.nkparts.com:{port}/{instance}")
+                return args
             else:
-                return f"http://{rtc}.nkparts.com:{port}/{instance}"
+                args.append(f"http://{rtc}.nkparts.com/{instance}")
+                return args
         else:
             config = createCUS(rtc, port, instance, path)
-            args = f' -settings:"{os.path.join(path, config)}"'
+            args.append(f'-settings:"{os.path.join(path, config)}"')
             if s['Profile']:
-                args = args + f' -profile:"{profile}"'
+                args.append(f'-profile:"{profile}"')
             if s['Configure']:
-                args = args + " -configure"
+                args.append("-configure")
             return args
+
+def argsJoin(s, configs):
+    args = getArgs(s, configs)
+    if s['NavisionVersion'] == '2009R2':
+        return (', ').join(args)
+    else:
+        if s['Client'] == 'WEB':
+            return args[0]
+        else:
+            return (' -').join(args)
 
 def createCUS(rtc, port, instance, path):
     config_name = f"{instance}_{rtc}_{port}.config"
@@ -126,9 +140,10 @@ def deleteFilesInDir(path):
         os.remove(os.path.join(path, f))
 
 def createShortcut(path_shortcuts, path_configs, path_icons, system):
-    lnk_path = getLnkPath(system, path_shortcuts)
+    shortcut_name = getLnkPath(system) + '.lnk'
+    lnk_path = os.path.join(path_shortcuts, shortcut_name)
     lnk_target = getTargetVersion(system)
-    lnk_args = getArgs(system, path_configs)
+    lnk_args = argsJoin(system, path_configs)
     lnk_icon = getIcon(system, path_icons)
     winshell.CreateShortcut(
         Path=lnk_path,
