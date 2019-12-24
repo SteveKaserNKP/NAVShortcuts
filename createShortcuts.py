@@ -86,7 +86,7 @@ def argsJoin(s, configs):
         if s['Client'] == 'WEB':
             return args[0]
         else:
-            return (' -').join(args)
+            return (' ').join(args)
 
 def createCUS(rtc, port, instance, path):
     config_name = f"{instance}_{rtc}_{port}.config"

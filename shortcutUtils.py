@@ -22,8 +22,7 @@ def doubleClick(event):
 def openNav(data):
     exe = cs.getTargetVersion(data)
     args = cs.argsJoin(data, paths.configs_path)
-    # runArgs = [exe, args]
-    runArgs = ['C:/Program Files (x86)/Microsoft Dynamics NAV/110/RoleTailored Client/Microsoft.Dynamics.Nav.Client.exe', r'-settings:"c:/Navision Shortcuts/testConfig/aep_AEP1-1_7337.config"']
+    runArgs = exe + ' ' + args
     print(runArgs)
     subprocess.call(runArgs)
 
