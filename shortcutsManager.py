@@ -1,16 +1,11 @@
 import tkinter as tk
-import os
-import json
-from iconFrame import IconFrame
-import subprocess
 import paths
 import shortcutUtils as sc_utils
 
 icon_size = 75
 icon_paths = paths.iconPathsSize(icon_size, paths.icons_path_png)
 
-with open('systems.json') as data:
-    systems = json.load(data)
+systems = sc_utils.parseSystemsJSON('systems.json')
 
 window = tk.Tk()
 window.title('Navision Shortcuts Manager')

@@ -3,6 +3,12 @@ import os
 import createShortcuts as cs
 import paths
 import subprocess
+import json
+
+def parseSystemsJSON(j):
+    with open(j) as data:
+        s = json.load(data)
+    return s
 
 def getIconFile(version, client, icon_paths):
     if version == '2009R2':
@@ -23,7 +29,6 @@ def openNav(data):
     exe = cs.getTargetVersion(data)
     args = cs.argsJoin(data, paths.configs_path)
     runArgs = exe + ' ' + args
-    print(runArgs)
     subprocess.call(runArgs)
 
 def createFrame(master, data):
