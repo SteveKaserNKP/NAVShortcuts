@@ -9,7 +9,7 @@ systems = sc_utils.parseSystemsJSON('systems.json')
 
 window = tk.Tk()
 window.title('Navision Shortcuts Manager')
-window.geometry('800x600')
+window.geometry('1500x960')
 
 icons = []
 c = 0
