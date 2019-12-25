@@ -16,6 +16,37 @@ def getIconFile(version, client, icon_paths):
     else:
         return icon_paths['icon_web'] if client == 'WEB' else icon_paths['icon_windows']
 
+def iconSingleClick(event):
+    parent = event.widget.winfo_parent()
+    data = event.widget._nametowidget(parent).data
+    g_parent = event.widget._nametowidget(parent).winfo_parent()
+    gg_parent = event.widget._nametowidget(g_parent).winfo_parent()
+    ggg_parent = event.widget._nametowidget(gg_parent)
+    ggg_parent_children = list(ggg_parent.children)
+    form_vars = event.widget._nametowidget(ggg_parent.children[ggg_parent_children[0]]).vars
+    form_vars['shared']['sys_name'].set(data['SystemName'])
+    form_vars['shared']['client'].set(data['Client'])
+    form_vars['shared']['version'].set(data['NavisionVersion'])
+    form_vars['shared']['sql_server'].set(data['SQLServer'])
+    form_vars['rtc']['rtc_server'].set(data['RTCServer'])
+    form_vars['rtc']['port'].set(data['ClientServicesPort'])
+    form_vars['rtc']['instance'].set(data['ServerInstanceName'])
+    if data['Profile'] == '':
+        form_vars['rtc']['use_profile'].set(0)
+    else:
+        form_vars['rtc']['use_profile'].set(1)
+    form_vars['rtc']['profile_name'].set(data['Profile'])
+    if data['Configure'] == '':
+        form_vars['rtc']['configure'].set(0)
+    else:
+        form_vars['rtc']['configure'].set(1)
+    form_vars['r2']['db_name'].set(data['DatabaseName'])
+    form_vars['r2']['company'].set(data['Company'])
+    if data['RequireAuthentication'] == '':
+        form_vars['r2']['req_auth'].set(0)
+    else:
+        form_vars['r2']['req_auth'].set(1)
+
 def iconDoubleClick(event):
     parent = event.widget.winfo_parent()
     data = event.widget._nametowidget(parent).data
@@ -42,11 +73,13 @@ def createIconLabel(master, data, icons, icon_paths):
     img = tk.PhotoImage(file=getIconFile(data['NavisionVersion'], data['Client'], icon_paths))
     icons.append(img)
     icon_lbl = tk.Label(master, image=icons[-1])
+    icon_lbl.bind('<Button-1>', iconSingleClick)
     icon_lbl.bind('<Double-Button-1>', iconDoubleClick)
     return (icon_lbl, icons)
 
 def createTextLabel(master, data):
     text_lbl = tk.Label(master, text=cs.getLnkPath(data), wraplength=100)
+    text_lbl.bind('<Button-1>', iconSingleClick)
     text_lbl.bind('<Double-Button-1>', iconDoubleClick)
     return text_lbl
 
@@ -68,7 +101,7 @@ def createFormEntry(master, name, c, r, lbl_font, entry_font, state=tk.NORMAL):
     entry = tk.Entry(frame, textvariable=var, font=entry_font, state=state)
     lbl.grid(column=0, row=0, sticky='W')
     entry.grid(column=0, row=1)
-    return entry
+    return (entry, var)
 
 def createOptionMenu(master, name, options, c, r, lbl_font, options_font, state=tk.NORMAL):
     frame = tk.Frame(master)
@@ -90,7 +123,7 @@ def createCheckbox(master, name, c, r, check_font, state=tk.NORMAL):
     var_checkbox = tk.IntVar()
     checkbox = tk.Checkbutton(frame, text=name, font=check_font, variable=var_checkbox, state=state)
     checkbox.grid(column=0, row=1)
-    return checkbox
+    return (checkbox, var_checkbox)
 
 def createFormFrame(master, name, c, r):
     f = tk.LabelFrame(master, text=name)
