@@ -13,27 +13,33 @@ form_frame.grid(column=0, row=0, ipadx=5, ipady=5, padx=5, pady=5, sticky='NESW'
 
 lbl_font = ('Calibri', 12)
 entry_font = ('Ebrima', 14)
-nav_versions = ['                    ', '2009R2', '2016', '2017', '2018']
-nav_clients = ['                    ', 'Windows', 'WEB']
+nav_versions = ['', '2009R2', '2016', '2017', '2018']
+nav_clients = ['', 'Windows', 'WEB']
+
+def changeState(el, state):
+    if isinstance(el, tk.Checkbutton):
+        el.configure(state=state)
+    else:
+        el.nametowidget(el.winfo_parent()).children['!label'].configure(state=state)
+        el.configure(state=state)
+
+def changeStates(els, state):
+    for el in els.keys():
+        changeState(els[el], state)    
 
 def versionChange(*args):
-    v = shared_els['version'].get()
-    if v not in ['', '2009R2']:
-        clients_label = shared_els['clients'].nametowidget(shared_els['clients'].winfo_parent()).children['!label']
-        clients_label.configure(state=tk.NORMAL)
-        shared_els['clients'].configure(state=tk.NORMAL)
-
-def clientChange(*args):
-    c = shared_els['client'].get()
-    if c == '':
-        # disable both
-        pass
-    elif c == '2009R2':
-        # disable rtc, enable 2009R2
-        pass
+    if shared_els['version'].get() == '':
+        changeState(shared_els['clients'], tk.DISABLED)
+        changeStates(r2_els, tk.DISABLED)
+        changeStates(rtc_els, tk.DISABLED)     
+    elif shared_els['version'].get() == '2009R2':
+        changeState(shared_els['clients'], tk.DISABLED)
+        changeStates(r2_els, tk.NORMAL)
+        changeStates(rtc_els, tk.DISABLED)     
     else:
-        # enable rtc, disable 2009R2
-        pass
+        changeState(shared_els['clients'], tk.NORMAL)
+        changeStates(r2_els, tk.DISABLED)
+        changeStates(rtc_els, tk.NORMAL)
 
 # Shared options
 frame_shared = sc_utils.createFormFrame(form_frame, 'Shared', 0, 0)
@@ -46,7 +52,6 @@ shared_els['version'].trace('w', versionChange)
 clients, client = sc_utils.createOptionMenu(frame_shared, 'Client', nav_clients, 0, 2, lbl_font, entry_font, tk.DISABLED)
 shared_els['clients'] = clients
 shared_els['client'] = client
-shared_els['client'].trace('w', clientChange)
 shared_els['sql_server'] = sc_utils.createFormEntry(frame_shared, 'SQL Server', 0, 3, lbl_font, entry_font)
 # RTC Options
 frame_rtc = sc_utils.createFormFrame(form_frame, 'RTC Options', 0, 1)
