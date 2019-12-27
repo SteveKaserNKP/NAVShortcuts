@@ -10,7 +10,7 @@ def resizeImage(img_path, img_save_path, basewidth):
     img.save(img_save_path)
 
 basewidth = 75
-img_path = os.path.join(os.path.dirname(__file__), 'icons', 'png', 'icon_2009R2.png')
-img_save_path = os.path.join(os.path.dirname(__file__), 'icons', 'png', f'icon_2009R2_{basewidth}.png')
+img_path = os.path.join(os.path.dirname(__file__), 'icons', 'png', 'icon_web.png')
+img_save_path = os.path.join(os.path.dirname(__file__), 'icons', 'png', f'icon_web_{basewidth}.png')
 
 resizeImage(img_path, img_save_path, basewidth)
