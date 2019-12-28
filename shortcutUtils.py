@@ -129,3 +129,11 @@ def createFormFrame(master, name, c, r):
     f = tk.LabelFrame(master, text=name)
     f.grid(column=c, row=r, pady=5, ipadx=5, ipady=5, sticky='EW')
     return f
+
+def createHeader(master, t, w, clr, c, r):
+    frame = tk.Label(master, text=t, bd=1, relief=tk.RIDGE, width=w, bg=clr)
+    frame.grid(column=c, row=r)
+
+def createCell(master, t, w, clr, c, r):
+    lbl = tk.Label(master, text=t, bd=1, relief=tk.GROOVE, width=w, bg=clr)
+    lbl.grid(column=c, row=r)
