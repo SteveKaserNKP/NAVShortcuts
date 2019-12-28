@@ -93,7 +93,8 @@ def createIconFrame(master, data, icons, icon_paths, c, r):
     icon_lbl.grid(column=0, row=0)
     text_lbl.grid(column=0, row=1)
 
-def createFormEntry(master, name, c, r, lbl_font, entry_font, state=tk.NORMAL):
+def createFormEntry(master, name, c, r, lbl_font, entry_font, els, v, var_name, state=tk.NORMAL):
+    print(f'entry {r}')
     frame = tk.Frame(master)
     frame.grid(column=c, row=r, pady=5, sticky='EW')
     lbl = tk.Label(frame, text=name, font=lbl_font, state=state)
@@ -101,9 +102,11 @@ def createFormEntry(master, name, c, r, lbl_font, entry_font, state=tk.NORMAL):
     entry = tk.Entry(frame, textvariable=var, font=entry_font, state=state)
     lbl.grid(column=0, row=0, sticky='W')
     entry.grid(column=0, row=1)
-    return (entry, var)
+    els[var_name] = entry
+    v[var_name] = var
 
-def createOptionMenu(master, name, options, c, r, lbl_font, options_font, state=tk.NORMAL):
+def createOptionMenu(master, name, options, c, r, lbl_font, options_font, els, v, var_name, state=tk.NORMAL):
+    print(f'option {r}')
     frame = tk.Frame(master)
     frame.grid(column=c, row=r, pady=5, sticky='EW')
     lbl_options = tk.Label(frame, text=name, font=lbl_font, state=state)
@@ -115,15 +118,18 @@ def createOptionMenu(master, name, options, c, r, lbl_font, options_font, state=
     options_menu.configure(font=options_font)
     lbl_options.grid(column=0, row=0, sticky='W')
     options.grid(column=0, row=1, sticky='W')
-    return (options, var_options)
+    els[var_name] = options
+    v[var_name] = var_options
 
-def createCheckbox(master, name, c, r, check_font, state=tk.NORMAL):
+def createCheckbox(master, name, c, r, check_font, els, v, var_name, state=tk.NORMAL):
+    print(f'check {r}')
     frame = tk.Frame(master)
     frame.grid(column=c, row=r, pady=5, sticky='EW')
     var_checkbox = tk.IntVar()
     checkbox = tk.Checkbutton(frame, text=name, font=check_font, variable=var_checkbox, state=state)
     checkbox.grid(column=0, row=1)
-    return (checkbox, var_checkbox)
+    els[var_name] = checkbox
+    v[var_name] = var_checkbox
 
 def createFormFrame(master, name, c, r):
     f = tk.LabelFrame(master, text=name)
@@ -137,3 +143,15 @@ def createHeader(master, t, w, clr, c, r):
 def createCell(master, t, w, clr, c, r):
     lbl = tk.Label(master, text=t, bd=1, relief=tk.GROOVE, width=w, bg=clr)
     lbl.grid(column=c, row=r)
+
+def createFormSection(master, lbl_font, entry_font, els, v, data):
+    for d in data:
+        print(d['row'])
+        if d['type'] == 'entry':
+            createFormEntry(master, d['title'], d['col'], d['row'], lbl_font, entry_font, els, v, d['var_name'], d['state'])
+        elif d['type'] == 'option':
+            createOptionMenu(master, d['title'], d['opts'], d['col'], d['row'], lbl_font, entry_font, els, v, d['var_name'], d['state'])
+        elif d['type'] == 'check':
+            createCheckbox(master, d['title'], d['col'], d['row'], lbl_font, els, v, d['var_name'], d['state'])
+        else:
+            pass
