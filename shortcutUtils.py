@@ -94,7 +94,6 @@ def createIconFrame(master, data, icons, icon_paths, c, r):
     text_lbl.grid(column=0, row=1)
 
 def createFormEntry(master, name, c, r, lbl_font, entry_font, els, v, var_name, state=tk.NORMAL):
-    print(f'entry {r}')
     frame = tk.Frame(master)
     frame.grid(column=c, row=r, pady=5, sticky='EW')
     lbl = tk.Label(frame, text=name, font=lbl_font, state=state)
@@ -106,7 +105,6 @@ def createFormEntry(master, name, c, r, lbl_font, entry_font, els, v, var_name, 
     v[var_name] = var
 
 def createOptionMenu(master, name, options, c, r, lbl_font, options_font, els, v, var_name, state=tk.NORMAL):
-    print(f'option {r}')
     frame = tk.Frame(master)
     frame.grid(column=c, row=r, pady=5, sticky='EW')
     lbl_options = tk.Label(frame, text=name, font=lbl_font, state=state)
@@ -122,7 +120,6 @@ def createOptionMenu(master, name, options, c, r, lbl_font, options_font, els, v
     v[var_name] = var_options
 
 def createCheckbox(master, name, c, r, check_font, els, v, var_name, state=tk.NORMAL):
-    print(f'check {r}')
     frame = tk.Frame(master)
     frame.grid(column=c, row=r, pady=5, sticky='EW')
     var_checkbox = tk.IntVar()
@@ -144,14 +141,59 @@ def createCell(master, t, w, clr, c, r):
     lbl = tk.Label(master, text=t, bd=1, relief=tk.GROOVE, width=w, bg=clr)
     lbl.grid(column=c, row=r)
 
-def createFormSection(master, lbl_font, entry_font, els, v, data):
+def createFormSection(master, frame_name, frame_c, frame_r, lbl_font, entry_font, data):
+    frame = createFormFrame(master, frame_name, frame_c, frame_r)
+    els = {}
+    v = {}
     for d in data:
-        print(d['row'])
         if d['type'] == 'entry':
-            createFormEntry(master, d['title'], d['col'], d['row'], lbl_font, entry_font, els, v, d['var_name'], d['state'])
+            createFormEntry(frame, d['title'], d['col'], d['row'], lbl_font, entry_font, els, v, d['var_name'], d['state'])
         elif d['type'] == 'option':
-            createOptionMenu(master, d['title'], d['opts'], d['col'], d['row'], lbl_font, entry_font, els, v, d['var_name'], d['state'])
+            createOptionMenu(frame, d['title'], d['opts'], d['col'], d['row'], lbl_font, entry_font, els, v, d['var_name'], d['state'])
         elif d['type'] == 'check':
-            createCheckbox(master, d['title'], d['col'], d['row'], lbl_font, els, v, d['var_name'], d['state'])
+            createCheckbox(frame, d['title'], d['col'], d['row'], lbl_font, els, v, d['var_name'], d['state'])
         else:
             pass
+    return (els, v)
+
+def testVersionChange(*args, form_els=''):
+    print(f'from sc_utils: {form_els}')
+
+def changeState(el, state):
+    if isinstance(el, tk.Checkbutton):
+        el.configure(state=state)
+    else:
+        el.nametowidget(el.winfo_parent()).children['!label'].configure(state=state)
+        el.configure(state=state)
+
+def changeStates(els, state):
+    for el in els.keys():
+        changeState(els[el], state)
+
+def versionChange(*args, form_els='', form_vars):
+    # print(dir(args[0]))
+    if form_vars['shared']['version'].get() == '':
+        changeState(form_els['shared']['clients'], tk.DISABLED)
+        changeStates(form_els['r2'], tk.DISABLED)
+        changeStates(form_els['rtc'], tk.DISABLED)
+    elif form_vars['shared']['version'].get() == '2009R2':
+        changeState(form_els['shared']['clients'], tk.DISABLED)
+        changeStates(form_els['r2'], tk.NORMAL)
+        changeStates(form_els['rtc'], tk.DISABLED)
+    else:
+        changeState(form_els['shared']['clients'], tk.NORMAL)
+        changeStates(form_els['r2'], tk.DISABLED)
+        changeStates(form_els['rtc'], tk.NORMAL)
+        changeState(form_els['rtc']['profile_name'], tk.DISABLED)
+
+def useProfile(*args, rtc_els='', rtc_vars=''):
+    if rtc_vars['use_profile'].get() == 1:
+        changeState(rtc_els['profile_name'], tk.NORMAL)
+    else:
+        changeState(rtc_els['profile_name'], tk.DISABLED)
+
+def createConfigure(*args):
+    pass
+
+def reqAuth(*args):
+    pass
