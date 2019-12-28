@@ -130,7 +130,7 @@ def createCheckbox(master, name, c, r, check_font, els, v, var_name, state=tk.NO
 
 def createFormFrame(master, name, c, r):
     f = tk.LabelFrame(master, text=name)
-    f.grid(column=c, row=r, pady=5, ipadx=5, ipady=5, sticky='EW')
+    f.grid(column=c, row=r, padx=5, pady=5, ipadx=5, ipady=5, sticky='EW')
     return f
 
 def createHeader(master, t, w, clr, c, r):

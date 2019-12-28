@@ -45,22 +45,30 @@ icon_paths = paths.iconPathsSize(icon_size, paths.icons_path_png)
 frame_shortcuts = tk.Frame(window, bd=1, relief=tk.RIDGE)
 frame_shortcuts.grid(column=1, row=0)
 
-icons = []
-c = 0
+frame_btns = sc_utils.createFormFrame(window, 'Systems', 1, 0)
+sys_names = sorted({sys['SystemName'] for sys in systems})
 r = 0
 stack = 10
-cur_system = ''
-for i, s in enumerate(systems):
-    if cur_system != s['SystemName']:
-        cur_system = s['SystemName']
-        frame_headers = tk.Frame(frame_shortcuts)
-        frame_headers.grid(column=0, row=r)
+for i, s in enumerate(sys_names):
+    lbl = tk.Label(frame_btns, text=s, width=10, bd=1, relief=tk.RIDGE, padx=5, pady=5)
+    if i > 0 and i % stack == 0:
         r+=1
-        for f, h in enumerate(misc_data.headers):
-            sc_utils.createHeader(frame_headers, h['name'], h['width'], h['clr'], f, 0)
-    for c, k in enumerate(s.keys()):
-        sc_utils.createCell(frame_headers, s[k], misc_data.headers[c]['width'], misc_data.clr_row, c, r)
-    r+=1
+    lbl.grid(column=i%stack, row=r)
+
+icons = []
+c = 0
+cur_system = ''
+# for i, s in enumerate(systems):
+    # if cur_system != s['SystemName']:
+    #     cur_system = s['SystemName']
+    #     frame_headers = tk.Frame(frame_shortcuts)
+    #     frame_headers.grid(column=0, row=r)
+    #     r+=1
+    #     for f, h in enumerate(misc_data.headers):
+    #         sc_utils.createHeader(frame_headers, h['name'], h['width'], h['clr'], f, 0)
+    # for c, k in enumerate(s.keys()):
+    #     sc_utils.createCell(frame_headers, s[k], misc_data.headers[c]['width'], misc_data.clr_row, c, r)
+    # r+=1
     # c = i % stack
     # if i > 0 and i % stack == 0:
     #     r+=1
