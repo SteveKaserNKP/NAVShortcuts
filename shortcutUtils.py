@@ -48,8 +48,9 @@ def iconSingleClick(event):
         form_vars['r2']['req_auth'].set(1)
 
 def iconDoubleClick(event):
-    parent = event.widget.winfo_parent()
-    data = event.widget._nametowidget(parent).data
+    parentName = event.widget.winfo_parent()
+    parent = event.widget._nametowidget(parentName)
+    data = parent.data
     openNav(data)
 
 def doubleClick(event):
@@ -129,8 +130,8 @@ def createCheckbox(master, name, c, r, check_font, els, v, var_name, state=tk.NO
     v[var_name] = var_checkbox
 
 def createFormFrame(master, name, c, r):
-    f = tk.LabelFrame(master, text=name)
-    f.grid(column=c, row=r, padx=5, pady=5, ipadx=5, ipady=5, sticky='EW')
+    f = tk.LabelFrame(master, text=name, padx=5, pady=5)
+    f.grid(column=c, row=r, sticky='W')
     return f
 
 def createHeader(master, t, w, clr, c, r):
@@ -170,7 +171,7 @@ def changeStates(els, state):
     for el in els.keys():
         changeState(els[el], state)
 
-def versionChange(*args, form_els='', form_vars):
+def versionChange(*args, form_els='', form_vars=''):
     # print(dir(args[0]))
     if form_vars['shared']['version'].get() == '':
         changeState(form_els['shared']['clients'], tk.DISABLED)

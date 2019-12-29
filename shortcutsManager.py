@@ -10,7 +10,7 @@ window.title('Navision Shortcuts Manager')
 window.geometry('1680x960')
 
 form_frame = tk.Frame(window, bd=1, relief=tk.RIDGE)
-form_frame.grid(column=0, row=0, ipadx=5, ipady=5, padx=5, pady=5, sticky='NESW')
+form_frame.grid(column=0, row=0, ipadx=5, ipady=5, padx=5, pady=5, sticky='NS')
 
 form_els = {}
 form_vars = {}
@@ -39,21 +39,80 @@ rtc_els_vars['use_profile'].trace('w', lambda *args: sc_utils.useProfile(rtc_els
 rtc_els_vars['configure'].trace('w', sc_utils.createConfigure)
 r2_els_vars['req_auth'].trace('w', sc_utils.reqAuth)
 
+def setSelection(widget):
+    parentName = widget.winfo_parent()
+    parent = widget._nametowidget(parentName)
+    if widget in parent.selected:
+        parent.selected.remove(widget)
+        widget.configure(relief=tk.RIDGE, bg='SystemButtonFace')
+    else:
+        parent.selected.append(widget)
+        widget.configure(relief=tk.SUNKEN, bg='SeaGreen1')
+
+def setSelections(frame, items):
+    if not frame.selected:
+        for w in frame.children.keys():
+            if frame.children[w].cget('text') in items:
+                setSelection(frame.children[w])
+    else:
+        selected_frame_items = {frame.children[w].cget('text') for w in frame.children.keys() if frame.children[w] in frame.selected}
+        needs_set = items - selected_frame_items
+        for w in frame.children.keys():
+            if frame.children[w].cget('text') in needs_set:
+                setSelection(frame.children[w])
+
+
+def selectSystem(event, frames=''):
+    setSelection(event.widget)
+    versions = {sys['NavisionVersion'] for sys in systems if sys['SystemName'] == event.widget.getvar('system')}
+    # print(frames['versions'].children)
+    setSelections(frames['versions'], versions)
+
+def selectVersion(event):
+    setSelection(event.widget)
+
+def selectClient(event):
+    setSelection(event.widget)
+
+def selectSQLServer(event):
+    setSelection(event.widget)
+
 icon_size = 75
 icon_paths = paths.iconPathsSize(icon_size, paths.icons_path_png)
 
 frame_shortcuts = tk.Frame(window, bd=1, relief=tk.RIDGE)
-frame_shortcuts.grid(column=1, row=0)
+frame_shortcuts.grid(column=1, row=0, ipadx=5, ipady=5, padx=5, pady=5, sticky='NS')
 
-frame_btns = sc_utils.createFormFrame(window, 'Systems', 1, 0)
+def createButtonFrame(master, form_name, c, r):
+    frame_btns = sc_utils.createFormFrame(master, form_name, c, r)
+    frame_btns.keys().append('selected')
+    frame_btns.selected = []
+    return frame_btns
+
+def insertLabelButtons(master, items, stack, lbl_name, lbl_width, callback):
+    r = 0
+    for i, s in enumerate(items):
+        lbl = tk.Label(master, text=s, width=lbl_width, bd=1, relief=tk.RIDGE, padx=5, pady=5)
+        lbl.keys().append(lbl_name)
+        lbl.setvar(lbl_name, s)
+        lbl.bind('<Button-1>', callback)
+        if i > 0 and i % stack == 0:
+            r+=1
+        lbl.grid(column=i%stack, row=r)
+
 sys_names = sorted({sys['SystemName'] for sys in systems})
-r = 0
-stack = 10
-for i, s in enumerate(sys_names):
-    lbl = tk.Label(frame_btns, text=s, width=10, bd=1, relief=tk.RIDGE, padx=5, pady=5)
-    if i > 0 and i % stack == 0:
-        r+=1
-    lbl.grid(column=i%stack, row=r)
+sql_servers = sorted({sys['SQLServer'] for sys in systems})
+stack = 6
+button_frames = {
+    'systems': createButtonFrame(frame_shortcuts, 'Systems', 0, 0),
+    'versions': createButtonFrame(frame_shortcuts, 'Versions', 0, 1),
+    'clients': createButtonFrame(frame_shortcuts, 'Clients', 0, 2),
+    'sql_servers': createButtonFrame(frame_shortcuts, 'SQL Servers', 0, 3)
+}
+insertLabelButtons(button_frames['systems'], sys_names, stack, 'system', 15, lambda event: selectSystem(event, frames=button_frames))
+insertLabelButtons(button_frames['versions'], misc_data.nav_versions[1:], stack, 'version', 15, selectVersion)
+insertLabelButtons(button_frames['clients'], misc_data.nav_clients[1:], stack, 'client', 15, selectClient)
+insertLabelButtons(button_frames['sql_servers'], sql_servers, stack, 'sql_server', 15, selectSQLServer)
 
 icons = []
 c = 0
