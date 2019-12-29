@@ -50,23 +50,16 @@ def setSelection(widget):
         widget.configure(relief=tk.SUNKEN, bg='SeaGreen1')
 
 def setSelections(frame, items):
-    if not frame.selected:
-        for w in frame.children.keys():
-            if frame.children[w].cget('text') in items:
-                setSelection(frame.children[w])
-    else:
-        selected_frame_items = {frame.children[w].cget('text') for w in frame.children.keys() if frame.children[w] in frame.selected}
-        needs_set = items - selected_frame_items
-        for w in frame.children.keys():
-            if frame.children[w].cget('text') in needs_set:
-                setSelection(frame.children[w])
-
+    selected_frame_widgets = {frame.children[w] for w in frame.children.keys() if frame.children[w] in frame.selected}
+    needs_set = items - selected_frame_widgets
+    list(map(lambda  w: setSelection(w), needs_set))
 
 def selectSystem(event, frames=''):
     setSelection(event.widget)
-    versions = {sys['NavisionVersion'] for sys in systems if sys['SystemName'] == event.widget.getvar('system')}
-    # print(frames['versions'].children)
-    setSelections(frames['versions'], versions)
+    versions = {sys['NavisionVersion'] for sys in systems if sys['SystemName'] == event.widget.cget('text')}
+    frame = frames['versions']
+    version_widgets = { frame.children[w] for w in frame.children.keys() if frame.children[w].cget('text') in versions }
+    setSelections(frames['versions'], version_widgets)
 
 def selectVersion(event):
     setSelection(event.widget)
