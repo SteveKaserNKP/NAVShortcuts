@@ -88,12 +88,14 @@ def createShortcutsList(systems_list, shortcuts_frame, r):
     for sys in systems_list.values():
         frame_headers = tk.Frame(shortcuts_frame)
         frame_headers.grid(column=0, row=r)
-        r+=1
         for f, h in enumerate(misc_data.headers):
-            sc_utils.createHeader(frame_headers, h['name'], h['width'], h['clr'], f, 0)
+            sc_utils.createHeader(frame_headers, h['name'], h['width'], h['clr'], f, r)
+        r+=1
         for s in sys:
+            frame_row = tk.Frame(frame_headers)
+            frame_row.grid(column=0, row=r)
             for c, k in enumerate(s.keys()):
-                sc_utils.createCell(frame_headers, s[k], misc_data.headers[c]['width'], misc_data.clr_row, c, r)
+                sc_utils.createCell(frame_row, s[k], misc_data.headers[c]['width'], misc_data.clr_row, c, r)
             r+=1
 
 icon_size = 75
