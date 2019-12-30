@@ -49,17 +49,20 @@ def setSelection(widget):
         parent.selected.append(widget)
         widget.configure(relief=tk.SUNKEN, bg='SeaGreen1')
 
-def setSelections(frame, items):
-    selected_frame_widgets = {frame.children[w] for w in frame.children.keys() if frame.children[w] in frame.selected}
-    needs_set = items - selected_frame_widgets
-    list(map(lambda  w: setSelection(w), needs_set))
+# def setSelections(frame, items):
+#     selected_frame_widgets = {frame.children[w] for w in frame.children.keys() if frame.children[w] in frame.selected}
+#     needs_unset = items & selected_frame_widgets
+#     if needs_unset:
+#         list(map(lambda  w: setSelection(w), needs_unset))
+#     needs_set = items - selected_frame_widgets
+#     list(map(lambda  w: setSelection(w), needs_set))
 
-def selectSystem(event, frames=''):
+def selectSystem(event):
     setSelection(event.widget)
-    versions = {sys['NavisionVersion'] for sys in systems if sys['SystemName'] == event.widget.cget('text')}
-    frame = frames['versions']
-    version_widgets = { frame.children[w] for w in frame.children.keys() if frame.children[w].cget('text') in versions }
-    setSelections(frames['versions'], version_widgets)
+    # versions = {sys['NavisionVersion'] for sys in systems if sys['SystemName'] == event.widget.cget('text')}
+    # frame = frames['versions']
+    # version_widgets = { frame.children[w] for w in frame.children.keys() if frame.children[w].cget('text') in versions }
+    # setSelections(frames['versions'], version_widgets)
 
 def selectVersion(event):
     setSelection(event.widget)
@@ -102,7 +105,8 @@ button_frames = {
     'clients': createButtonFrame(frame_shortcuts, 'Clients', 0, 2),
     'sql_servers': createButtonFrame(frame_shortcuts, 'SQL Servers', 0, 3)
 }
-insertLabelButtons(button_frames['systems'], sys_names, stack, 'system', 15, lambda event: selectSystem(event, frames=button_frames))
+# insertLabelButtons(button_frames['systems'], sys_names, stack, 'system', 15, lambda event: selectSystem(event, frames=button_frames))
+insertLabelButtons(button_frames['systems'], sys_names, stack, 'system', 15, selectSystem)
 insertLabelButtons(button_frames['versions'], misc_data.nav_versions[1:], stack, 'version', 15, selectVersion)
 insertLabelButtons(button_frames['clients'], misc_data.nav_clients[1:], stack, 'client', 15, selectClient)
 insertLabelButtons(button_frames['sql_servers'], sql_servers, stack, 'sql_server', 15, selectSQLServer)
